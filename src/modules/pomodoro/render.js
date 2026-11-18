@@ -5,8 +5,13 @@ import {
   timerStatus,
   timerPrevisao,
   display,
-  elCiclosHoje
+  elCiclosHoje,
+  elMinutosHoje,
+  elMinutosOntem,
+  elOfensiva,
 } from "./DOM.js";
+import { formatarTempoAcumulado } from "../../shared/formatadores.js";
+import { getEstado } from "./pomodoro.js";
 
 export const atualizarDisplay = (estado) => {
   const minutosFormatados = estado.minutos.toString().padStart(2, "0");
@@ -66,7 +71,11 @@ export const atualizarControles = (estado) => {
   }
 };
 export const renderizarEstatisticas = (estado) => {
+  const {minutosHoje, minutosOntem, ofensiva} = getEstado();
   elCiclosHoje.textContent = estado.pomodoroCiclosHoje;
+  elMinutosHoje.textContent = formatarTempoAcumulado(minutosHoje);
+  elMinutosOntem.textContent = formatarTempoAcumulado(minutosOntem);
+  elOfensiva.textContent = formatarTempoAcumulado(ofensiva);
 }
 export const renderizarPomodoro = (estado) => {
   atualizarDisplay(estado);

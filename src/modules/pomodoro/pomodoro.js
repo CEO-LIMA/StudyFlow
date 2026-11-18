@@ -1,9 +1,4 @@
-// Elementos HTML
-const elMinutosHoje = document.getElementById("tempoFocoPainel");
-const elMinutosOntem = document.getElementById("tempoFocoOntem");
-const elOfensiva = document.getElementById("ofensivaPainel");
-const secaoEstatisticas = document.querySelector(".estatisticas");
-
+export const secaoEstatisticas = document.querySelector(".estatisticas");
 // Variáveis De Controle
 const isTestMode = true;
 let TEMPO_FOCO_MIN = isTestMode ? 1 : 25;
@@ -31,26 +26,10 @@ export const getEstado = () => {
     pomodoroCiclosHoje,
     status,
     tempoFocoMin:TEMPO_FOCO_MIN,
+    minutosHoje:pomodoroMinutosHoje,
+    minutosOntem:pomodoroMinutosOntem,
+    ofensiva:pomodoroOfensiva
   };
-};
-
-// Formata os minutos acumulados acima de 60 min para horas
-const formatarTempoAcumulado = (minutosTotais) => {
-  let horas;
-  let minutos;
-  // verifica se os minutos passaram ou não dos 60min
-  if (minutosTotais < 60) {
-    return `${minutosTotais} min`;
-  } else if (minutosTotais >= 60) {
-    horas = Math.floor(minutosTotais / 60);
-    minutos = minutosTotais % 60;
-    // verifica se o resto é zero antes de decidir qual vai retonar
-    if (minutos === 0) {
-      return `${horas}h`;
-    }
-    return `${horas}h, ${minutos}min`;
-  }
-  return;
 };
 
 // Função de aviso sonoro
@@ -95,12 +74,12 @@ const atualizarEstatisticas = () => {
       ? 0
       : parseInt(localStorage.getItem("pomodoro_minutos_hoje"), 10);
   const minutosAtualizados = TEMPO_FOCO_MIN + minutosAtuaisNoCofre;
-  // Salva os minutos atualizados novamente no localStorage e atauliza o painel Tempo de Foco
+  pomodoroMinutosHoje = minutosAtualizados;
+  // Salva os minutos atualizados novamente no localStorage e atualiza o painel Tempo de Foco
   localStorage.setItem(
     "pomodoro_minutos_hoje",
     JSON.stringify(minutosAtualizados),
   );
-  elMinutosHoje.textContent = `${formatarTempoAcumulado(minutosAtualizados)}`;
   // Pega a ofensiva do localStorage atauliza
   if (pomodoroCiclosHoje === 1) {
     const ofensivaAtualNoCofre =
@@ -108,18 +87,18 @@ const atualizarEstatisticas = () => {
         ? 0
         : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
     const ofensivaAtualizada = ofensivaAtualNoCofre + 1;
+    pomodoroOfensiva = ofensivaAtualizada;
     // Salva ofensiva atualizada e atualiza o painel da ofensiva
     localStorage.setItem(
       "pomodoro_ofensiva",
       JSON.stringify(ofensivaAtualizada),
     );
-    elOfensiva.textContent = `${ofensivaAtualizada}🔥`;
   } else {
     const ofensivaAtualNoCofre =
       localStorage.getItem("pomodoro_ofensiva") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
-    elOfensiva.textContent = `${ofensivaAtualNoCofre} 🔥`;
+    pomodoroOfensiva = ofensivaAtualNoCofre;
   }
 };
 
@@ -211,7 +190,7 @@ const gerenciarFimDeCiclo = () => {
 };
 
 // Função de inicializção verifica se o localStorage é null
-const inicializarAplicativo = () => {
+export const inicializarAplicativo = () => {
   // Cria a data de hoje zerada
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -231,8 +210,6 @@ const inicializarAplicativo = () => {
     if (dataSalva === null) {
       pomodoroMinutosOntem = 0;
       pomodoroMinutosHoje = 0;
-      elMinutosOntem.textContent = `Ontem ${formatarTempoAcumulado(pomodoroMinutosOntem)}`;
-      elMinutosHoje.textContent = `${formatarTempoAcumulado(pomodoroMinutosHoje)}`;
     } else {
       const minutosAcumulados =
         localStorage.getItem("pomodoro_minutos_hoje") === null
@@ -243,11 +220,9 @@ const inicializarAplicativo = () => {
         "pomodoro_minutos_ontem",
         JSON.stringify(pomodoroMinutosOntem),
       );
-      elMinutosOntem.textContent = `Ontem ${formatarTempoAcumulado(pomodoroMinutosOntem)}`;
 
       pomodoroMinutosHoje = 0;
       localStorage.setItem("pomodoro_minutos_hoje", JSON.stringify(0));
-      elMinutosHoje.textContent = `${formatarTempoAcumulado(pomodoroMinutosHoje)}`;
     }
     // Reset card 3 (ofensiva)
     const diferencaTempo = dataParaOStorage - dataSalva;
@@ -255,14 +230,12 @@ const inicializarAplicativo = () => {
       // Primeiro acesso: usúario sem histórico
       pomodoroOfensiva = 0;
       localStorage.setItem("pomodoro_ofensiva", JSON.stringify(0));
-      elOfensiva.textContent = 0;
     } else {
       // O usuario manteve a ofensiva do dia seguinte
       pomodoroOfensiva =
         localStorage.getItem("pomodoro_ofensiva") === null
           ? 0
           : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
-      elOfensiva.textContent = `${pomodoroOfensiva} 🔥`;
     }
     localStorage.setItem(
       "pomodoro_ultima_data",
@@ -279,19 +252,16 @@ const inicializarAplicativo = () => {
       localStorage.getItem("pomodoro_minutos_hoje") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_minutos_hoje"), 10);
-    elMinutosHoje.textContent = `${formatarTempoAcumulado(pomodoroMinutosHoje)}`;
     // carrega os minutos de ontem
     pomodoroMinutosOntem =
       localStorage.getItem("pomodoro_minutos_ontem") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_minutos_ontem"), 10);
-    elMinutosOntem.textContent = `Ontem ${formatarTempoAcumulado(pomodoroMinutosOntem)}`;
     // carrega a ofensiva
     pomodoroOfensiva =
       localStorage.getItem("pomodoro_ofensiva") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
-    elOfensiva.textContent = `${pomodoroOfensiva} 🔥`;
   }
 };
 
@@ -316,5 +286,3 @@ export const diminuirTempo= () => {
     minutos = TEMPO_FOCO_MIN;
 }
 };
-// carrega o escript antes de renderizar o DOM
-document.addEventListener("DOMContentLoaded", inicializarAplicativo);

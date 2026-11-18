@@ -1,4 +1,4 @@
-import { getEstado, resetarCronometro, pausarCronometro, iniciarCronometro, aumentarTempo, diminuirTempo } from "./modules/pomodoro/pomodoro.js";
+import { inicializarAplicativo, getEstado, resetarCronometro, pausarCronometro, iniciarCronometro, aumentarTempo, diminuirTempo } from "./modules/pomodoro/pomodoro.js";
 import { renderizarPomodoro } from "./modules/pomodoro/render.js";
 import { botaoIniciar, botaoReset, btnAumentar, btnDiminuir } from "./modules/pomodoro/DOM.js";
 
@@ -36,3 +36,8 @@ btnDiminuir.addEventListener("click", () => {
   const estado = getEstado();
   renderizarPomodoro(estado);
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  inicializarAplicativo();
+  renderizarPomodoro(getEstado());
+})
