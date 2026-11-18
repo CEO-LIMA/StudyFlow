@@ -1,18 +1,4 @@
-// Elementos HTML
-const btnAumentar = document.getElementById("btnAumentar");
-const btnDiminuir = document.getElementById("btnDiminuir");
-const painelSetas = document.getElementById("painelSetas");
-const botaoIniciar = document.getElementById("btnIniciar");
-const botaoReset = document.getElementById("btnResetar");
-const display = document.getElementById("tempoDisplay");
-const timerStatus = document.getElementById("timerStatus");
-const elCiclosHoje = document.getElementById("contadorPainel");
-const elMinutosHoje = document.getElementById("tempoFocoPainel");
-const elMinutosOntem = document.getElementById("tempoFocoOntem");
-const elOfensiva = document.getElementById("ofensivaPainel");
-const timerPrevisao = document.getElementById("timerPrevisao");
-const secaoEstatisticas = document.querySelector(".estatisticas");
-
+export const secaoEstatisticas = document.querySelector(".estatisticas");
 // Variáveis De Controle
 const isTestMode = true;
 let TEMPO_FOCO_MIN = isTestMode ? 1 : 25;
@@ -25,29 +11,26 @@ let segundos = TEMPO_FOCO_SEG;
 let cronometroId = null;
 let modoAtual = "foco";
 let ciclosConcluidos = 0;
+let status = "parado";
 let pomodoroCiclosHoje = 0;
 let pomodoroMinutosHoje = 0;
 let pomodoroMinutosOntem = 0;
 let pomodoroOfensiva = 0;
 
-// Formata os minutos acumulados acima de 60 min para horas
-const formatarTempoAcumulado = (minutosTotais) => {
-  let horas;
-  let minutos;
-  // verifica se os minutos passaram ou não dos 60min
-  if(minutosTotais < 60){
-    return `${minutosTotais} min`;
-  }else if(minutosTotais >= 60){
-    horas = Math.floor(minutosTotais / 60);
-    minutos = minutosTotais % 60;
-    // verifica se o resto é zero antes de decidir qual vai retonar 
-    if(minutos === 0){
-      return `${horas}h`
-    }
-    return `${horas}h, ${minutos}min`
-  }
-  return;
-}
+export const getEstado = () => {
+  return {
+    minutos,
+    segundos,
+    modoAtual,
+    ciclosConcluidos,
+    pomodoroCiclosHoje,
+    status,
+    tempoFocoMin:TEMPO_FOCO_MIN,
+    minutosHoje:pomodoroMinutosHoje,
+    minutosOntem:pomodoroMinutosOntem,
+    ofensiva:pomodoroOfensiva
+  };
+};
 
 // Função de aviso sonoro
 const emitirBeep = () => {
@@ -74,37 +57,6 @@ const emitirBeep = () => {
   }, 200);
 };
 
-// Renderizar o cronômetro na tela
-const atualizarDisplay = () => {
-  let minutosFormatados = minutos.toString().padStart(2, "0");
-  let segundosFormatados = segundos.toString().padStart(2, "0");
-  display.textContent = `${minutosFormatados}:${segundosFormatados}`;
-};
-
-// Controla as mensagens no painel orientando o usuário
-const atualizarStatusTexto = () => {
-  if (modoAtual === "foco") {
-    if (ciclosConcluidos === 0) {
-      timerStatus.textContent = "Período de foco (1 de 2)";
-
-      if (TEMPO_FOCO_MIN >= 60) {
-        timerPrevisao.innerHTML =
-          "A Seguir: <strong>10 min de intervalor</strong>";
-      } else {
-        timerPrevisao.innerHTML =
-          "A seguir: <strong>5 min de intervalo</strong>";
-      }
-      botaoIniciar.textContent = "Iniciar Ciclo ▶️";
-    } else if (ciclosConcluidos === 1) {
-      timerStatus.textContent = "Período de foco (2 de 2)";
-      timerPrevisao.innerHTML = "A seguir: <strong>fim do bloco</strong>";
-    }
-  } else if (modoAtual === "descanso") {
-    timerStatus.textContent = "Intervalo ☕";
-    timerPrevisao.innerHTML = "A seguir: <strong>25 min de foco</strong>";
-  }
-};
-
 // Renderiza as Estatiscas na tela
 const atualizarEstatisticas = () => {
   // Cria a data de hoje Zerada
@@ -116,19 +68,18 @@ const atualizarEstatisticas = () => {
     "pomodoro_ciclos_hoje",
     JSON.stringify(pomodoroCiclosHoje),
   );
-  elCiclosHoje.textContent = pomodoroCiclosHoje;
   // pega os minutos do localStorage soma
   const minutosAtuaisNoCofre =
     localStorage.getItem("pomodoro_minutos_hoje") === null
       ? 0
       : parseInt(localStorage.getItem("pomodoro_minutos_hoje"), 10);
   const minutosAtualizados = TEMPO_FOCO_MIN + minutosAtuaisNoCofre;
-  // Salva os minutos atualizados novamente no localStorage e atauliza o painel Tempo de Foco
+  pomodoroMinutosHoje = minutosAtualizados;
+  // Salva os minutos atualizados novamente no localStorage e atualiza o painel Tempo de Foco
   localStorage.setItem(
     "pomodoro_minutos_hoje",
     JSON.stringify(minutosAtualizados),
   );
-  elMinutosHoje.textContent = `${formatarTempoAcumulado(minutosAtualizados)}`;
   // Pega a ofensiva do localStorage atauliza
   if (pomodoroCiclosHoje === 1) {
     const ofensivaAtualNoCofre =
@@ -136,39 +87,36 @@ const atualizarEstatisticas = () => {
         ? 0
         : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
     const ofensivaAtualizada = ofensivaAtualNoCofre + 1;
+    pomodoroOfensiva = ofensivaAtualizada;
     // Salva ofensiva atualizada e atualiza o painel da ofensiva
     localStorage.setItem(
       "pomodoro_ofensiva",
       JSON.stringify(ofensivaAtualizada),
     );
-    elOfensiva.textContent = `${ofensivaAtualizada}🔥`;
   } else {
     const ofensivaAtualNoCofre =
       localStorage.getItem("pomodoro_ofensiva") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
-    elOfensiva.textContent = `${ofensivaAtualNoCofre} 🔥`;
+    pomodoroOfensiva = ofensivaAtualNoCofre;
   }
 };
 
 // Temporizador assíncrono do navegador
-const iniciarCronometro = () => {
+export const iniciarCronometro = (callback) => {
   // verifica se o cronômetro já foi iniciado
   if (cronometroId !== null) return;
+  status = "executando";
   if (TEMPO_FOCO_MIN >= 60 && ciclosConcluidos === 0) {
     minutos = TEMPO_FOCO_MIN / 2;
   }
-
-  atualizarStatusTexto();
-  secaoEstatisticas.hidden = true;
-  timerPrevisao.hidden = false;
-  painelSetas.classList.add("escondido");
 
   cronometroId = setInterval(() => {
     // verifica se minutos e segundos são 0
     if (segundos === 0 && minutos === 0) {
       emitirBeep();
       gerenciarFimDeCiclo();
+      callback();
       return;
     }
     if (segundos === 0) {
@@ -177,39 +125,31 @@ const iniciarCronometro = () => {
     } else {
       segundos--;
     }
-
-    atualizarDisplay();
+      callback();
   }, 1000);
 };
 
 // Função de pausar
-const pausarCronometro = () => {
+export const pausarCronometro = () => {
   clearInterval(cronometroId);
   cronometroId = null;
-  timerPrevisao.textContent = "Em Pausa";
+  status = "pausado";
 };
 
 // Função de reset
-const resetarCronometro = () => {
+export const resetarCronometro = () => {
   clearInterval(cronometroId);
   minutos = TEMPO_FOCO_MIN;
   segundos = TEMPO_FOCO_SEG;
   modoAtual = "foco";
   ciclosConcluidos = 0;
-  atualizarDisplay();
-  atualizarStatusTexto();
   cronometroId = null;
-  //renderizar o diplay resetado
-  botaoIniciar.classList.remove("redondo");
-  botaoIniciar.textContent = "Iniciar Ciclo ▶️";
-  botaoReset.classList.add("escondido");
-  painelSetas.classList.remove("escondido");
-  timerPrevisao.innerHTML = "<strong>Você terá apenas 1 intervalo</strong>";
+
+  status = "parado";
 };
 
 // Função de Ciclos
 const gerenciarFimDeCiclo = () => {
-  emitirBeep(); // Aviso sonoro toca no fim
 
   if (modoAtual === "foco") {
     ciclosConcluidos++; // adiciona +1 ao contador
@@ -235,10 +175,7 @@ const gerenciarFimDeCiclo = () => {
       modoAtual = "foco";
       minutos = TEMPO_FOCO_MIN;
       segundos = TEMPO_FOCO_SEG;
-      painelSetas.classList.remove("escondido");
-      botaoIniciar.classList.remove("redondo");
-      secaoEstatisticas.hidden = false;
-      timerPrevisao.hidden = true;
+      status = "parado";
     }
   } else if (modoAtual === "descanso") {
     // Descanso acabou volta para segundo bloco
@@ -250,12 +187,10 @@ const gerenciarFimDeCiclo = () => {
     }
     segundos = TEMPO_FOCO_SEG;
   }
-  atualizarDisplay();
-  atualizarStatusTexto();
 };
 
 // Função de inicializção verifica se o localStorage é null
-const inicializarAplicativo = () => {
+export const inicializarAplicativo = () => {
   // Cria a data de hoje zerada
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -270,14 +205,11 @@ const inicializarAplicativo = () => {
     // Reset do card 1: Novo dia ou primeiro acesso!(Ciclos)
     pomodoroCiclosHoje = 0;
     localStorage.setItem("pomodoro_ciclos_hoje", JSON.stringify(0));
-    elCiclosHoje.textContent = 0;
 
     // Reset do card 2 (Minutos e foco)
     if (dataSalva === null) {
       pomodoroMinutosOntem = 0;
       pomodoroMinutosHoje = 0;
-      elMinutosOntem.textContent =  `Ontem ${formatarTempoAcumulado(pomodoroMinutosOntem)}`;
-      elMinutosHoje.textContent = `${formatarTempoAcumulado(pomodoroMinutosHoje)}`;
     } else {
       const minutosAcumulados =
         localStorage.getItem("pomodoro_minutos_hoje") === null
@@ -288,11 +220,9 @@ const inicializarAplicativo = () => {
         "pomodoro_minutos_ontem",
         JSON.stringify(pomodoroMinutosOntem),
       );
-      elMinutosOntem.textContent = `Ontem ${formatarTempoAcumulado(pomodoroMinutosOntem)}`;
 
       pomodoroMinutosHoje = 0;
       localStorage.setItem("pomodoro_minutos_hoje", JSON.stringify(0));
-      elMinutosHoje.textContent = `${formatarTempoAcumulado(pomodoroMinutosHoje)}`;
     }
     // Reset card 3 (ofensiva)
     const diferencaTempo = dataParaOStorage - dataSalva;
@@ -300,14 +230,12 @@ const inicializarAplicativo = () => {
       // Primeiro acesso: usúario sem histórico
       pomodoroOfensiva = 0;
       localStorage.setItem("pomodoro_ofensiva", JSON.stringify(0));
-      elOfensiva.textContent = 0;
     } else {
       // O usuario manteve a ofensiva do dia seguinte
       pomodoroOfensiva =
         localStorage.getItem("pomodoro_ofensiva") === null
           ? 0
           : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
-      elOfensiva.textContent = `${pomodoroOfensiva} 🔥`;
     }
     localStorage.setItem(
       "pomodoro_ultima_data",
@@ -319,30 +247,25 @@ const inicializarAplicativo = () => {
       localStorage.getItem("pomodoro_ciclos_hoje") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_ciclos_hoje"), 10);
-    elCiclosHoje.textContent = pomodoroCiclosHoje;
     // carrega os minutos do dia
     pomodoroMinutosHoje =
       localStorage.getItem("pomodoro_minutos_hoje") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_minutos_hoje"), 10);
-    elMinutosHoje.textContent = `${formatarTempoAcumulado(pomodoroMinutosHoje)}`;
     // carrega os minutos de ontem
     pomodoroMinutosOntem =
       localStorage.getItem("pomodoro_minutos_ontem") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_minutos_ontem"), 10);
-    elMinutosOntem.textContent = `Ontem ${formatarTempoAcumulado(pomodoroMinutosOntem)}`;
     // carrega a ofensiva
     pomodoroOfensiva =
       localStorage.getItem("pomodoro_ofensiva") === null
         ? 0
         : parseInt(localStorage.getItem("pomodoro_ofensiva"), 10);
-    elOfensiva.textContent = `${pomodoroOfensiva} 🔥`;
   }
 };
 
-// Evento de click da setas
-btnAumentar.addEventListener("click", () => {
+export const aumentarTempo = () => {
   if (TEMPO_FOCO_MIN < maximo) {
     if (TEMPO_FOCO_MIN >= 60) {
       TEMPO_FOCO_MIN += 10;
@@ -350,10 +273,10 @@ btnAumentar.addEventListener("click", () => {
       TEMPO_FOCO_MIN += 5;
     }
     minutos = TEMPO_FOCO_MIN;
-    atualizarDisplay();
-  }
-});
-btnDiminuir.addEventListener("click", () => {
+}
+};
+
+export const diminuirTempo= () => {
   if (cronometroId === null && TEMPO_FOCO_MIN > minimo) {
     if (TEMPO_FOCO_MIN > 60) {
       TEMPO_FOCO_MIN -= 10;
@@ -361,28 +284,5 @@ btnDiminuir.addEventListener("click", () => {
       TEMPO_FOCO_MIN -= 5;
     }
     minutos = TEMPO_FOCO_MIN;
-    atualizarDisplay();
-  }
-});
-botaoIniciar.addEventListener("click", () => {
-  // verifica se cronometro estar parado
-  if (cronometroId === null) {
-    iniciarCronometro();
-    botaoIniciar.classList.add("redondo");
-    botaoIniciar.innerHTML = `<i data-lucide="pause"></i>`;
-    lucide.createIcons();
-    display.style.color = "#61afef";
-    botaoReset.classList.remove("remove");
-  } else {
-    pausarCronometro();
-    botaoIniciar.innerHTML = `<i data-lucide="play"></i>`;
-    lucide.createIcons();
-    botaoReset.classList.remove("escondido");
-    display.style.color = "#ffffff";
-  }
-});
-botaoReset.addEventListener("click", () => {
-  resetarCronometro();
-});
-// carrega o escript antes de renderizar o DOM
-document.addEventListener("DOMContentLoaded", inicializarAplicativo);
+}
+};
