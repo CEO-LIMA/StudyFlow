@@ -1,4 +1,4 @@
-import { inputTarefa, btnAdicionarTarefas, listaTarefas,listaConcluidas } from "./dom.js";
+import { inputTarefa, btnAdicionarTarefas, listaTarefas,listaConcluidas } from "./DOM.js";
 let listaDetarefasArray = [];
 
 btnAdicionarTarefas.addEventListener("click", (e) =>{
