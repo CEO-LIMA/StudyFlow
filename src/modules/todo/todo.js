@@ -1,14 +1,4 @@
-// ==========================================
-// REQUISITOS DE NEGÓCIO - TODO LIST (MVP)
-// ==========================================
-
-// [ ] PILAR 1: CRIAR TAREFA (CREATE)
-// -> Capturar o valor do input
-const inputTarefa = document.getElementById("inputTarefa");
-const btnAdicionarTarefas = document.getElementById("btnAdicionar");
-const listaTarefas = document.getElementById("listaTarefas");
-const listaConcluidas = document.getElementById("listaTarefasConcluidas");
-
+import { inputTarefa, btnAdicionarTarefas, listaTarefas,listaConcluidas } from "./dom.js";
 let listaDetarefasArray = [];
 
 btnAdicionarTarefas.addEventListener("click", (e) =>{
@@ -41,7 +31,7 @@ inputTarefa.addEventListener("input", () =>{
 })
 
 // [ ] PILAR 2: LISTAR TAREFAS (READ)
-const renderizarTarefas = () => {
+export const renderizarTarefas = () => {
     // -> Limpar o contêiner HTML antes de renderizar para não duplicar.
     listaTarefas.innerHTML = "";
     listaConcluidas.innerHTML = "";

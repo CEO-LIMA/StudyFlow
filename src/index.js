@@ -1,5 +1,6 @@
 import { inicializarAplicativo, getEstado, resetarCronometro, pausarCronometro, iniciarCronometro, aumentarTempo, diminuirTempo } from "./modules/pomodoro/pomodoro.js";
 import { renderizarPomodoro } from "./modules/pomodoro/render.js";
+import { renderizarTarefas } from "./modules/todo/todo.js";
 import { botaoIniciar, botaoReset, btnAumentar, btnDiminuir } from "./modules/pomodoro/DOM.js";
 
 botaoIniciar.addEventListener("click", () => {
