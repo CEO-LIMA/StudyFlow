@@ -24,14 +24,15 @@
 
 ---
 
-### 🔄 Em Andamento: Modularização das Tarefas (Todo) — Branch `refactor/modularize-task` (23/11/2026)
-- **Avanços Realizados (23/11/2026):**
-  - **Criação de `src/modules/todo/DOM.js`:** Isolamento das capturas de nós do DOM (`inputTarefa`, `btnAdicionarTarefas`, `listaTarefas`, `listaConcluidas`).
-  - **Migração para ES Modules:** Início da conversão de `src/modules/todo/todo.js` com importação dos seletores do `DOM.js` e exportação inicial de `renderizarTarefas`.
+### 🔄 Em Andamento: Modularização das Tarefas (Todo) — Branch `refactor/modularize-task`
+- **Avanços Realizados:**
+  - **Criação de `src/modules/todo/DOM.js` (23/11/2026):** Isolamento das capturas de nós do DOM (`inputTarefa`, `btnAdicionarTarefas`, `listaTarefas`, `listaConcluidas`).
+  - **Migração para ES Modules (23/11/2026):** Início da conversão de `src/modules/todo/todo.js` com importação dos seletores do `DOM.js`.
+  - **Extração de Funções de Estado Puro (24/11/2026):** Implementação e exportação de `getTarefas`, `adicionarTarefa`, `alternarStatusTarefa` e `removerTarefa` no `src/modules/todo/todo.js`.
 - **Pontos Restantes na Branch:**
-  - `src/modules/todo/todo.js` ainda mantém acoplamento de estado (`listaDetarefasArray`) com manipulação imperativa de DOM e event listeners anexados no escopo do arquivo.
-  - Necessidade de extrair a lógica de renderização para `src/modules/todo/render.js` e as operações de estado puro para `src/modules/todo/todo.js`.
-  - O `src/index.js` ainda não orquestra o ciclo de vida e eventos de tarefas.
+  - Extrair a função de apresentação `renderizarTarefas` para `src/modules/todo/render.js`.
+  - Migrar os event listeners de submissão, clique e input para `src/index.js`, centralizando a orquestração.
+  - Remover a tag `<script src="./src/modules/todo/todo.js"></script>` legada do `index.html`.
 
 ---
 
@@ -40,13 +41,13 @@
 > **Regra de Ouro do Tech Lead:** *Isole a feature em camadas de responsabilidade única (DOM, Estado/Regras e Renderização), orquestrando o fluxo no ponto de entrada da aplicação.*
 
 - **Tipo:** Refatoração Arquitetural e Modularização ES6 (Refactor).
-- **Alvo Imediato:** Extrair as funções puras de estado (`getTarefas`, manipulação do array) em `src/modules/todo/todo.js` e isolar a construção de interface em `src/modules/todo/render.js`.
+- **Alvo Imediato:** Criar `src/modules/todo/render.js` e migrar os event listeners para `src/index.js`.
 - **Checklist da Branch:**
   - [x] **Criar `src/modules/todo/DOM.js` (23/11/2026):** Exportar seletores dos inputs, botões e listas (`inputTarefa`, `btnAdicionarTarefas`, `listaTarefas`, `listaConcluidas`).
   - [x] **Migrar `src/modules/todo/todo.js` para ES Modules (23/11/2026):** Importar elementos do `DOM.js`.
-  - [ ] **Extrair funções de estado puro (Próximo Passo):** Isolar em `src/modules/todo/todo.js` as funções de negócio e estado: `getTarefas()`, `adicionarTarefa()`, `alternarStatusTarefa()` e `removerTarefa()`, sem referências a nós de interface.
+  - [x] **Extrair funções de estado puro (24/11/2026):** Isolar em `src/modules/todo/todo.js` as funções de negócio e estado: `getTarefas()`, `adicionarTarefa()`, `alternarStatusTarefa()` e `removerTarefa()`.
   - [ ] **Criar `src/modules/todo/render.js` (Próximo Passo):** Extrair a função `renderizarTarefas(tarefas)` responsável exclusivamente por construir os itens visuais (`li`, checkboxes, botões de exclusão e mensagens de lista vazia).
-  - [ ] **Integrar no `src/index.js`:** Conectar os event listeners de submissão e deleção/toggle no orquestrador raiz.
+  - [ ] **Migrar event listeners para `src/index.js` (Próximo Passo):** Conectar os event listeners de submissão, input e deleção/toggle no orquestrador raiz.
   - [ ] **Atualizar `index.html`:** Remover a importação legada `<script src="./src/modules/todo/todo.js"></script>`.
 - **Critério de Sucesso (DoD):** Todas as operações de tarefas funcionando via ES Modules orquestradas pelo `src/index.js`, com `todo.js` totalmente livre de manipulação de DOM.
 
