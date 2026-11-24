@@ -1,11 +1,45 @@
 import { inputTarefa, btnAdicionarTarefas, listaTarefas,listaConcluidas } from "./DOM.js";
 let listaDetarefasArray = [];
 
+export const getTarefas = () => [listaDetarefasArray];
+
+export const adicionarTarefa = (textoBruto = "") => {
+    // -> Validar se o campo não está vazio (remover espaços com .trim()).
+    const textoLimpo = textoBruto.trim();
+    if(textoLimpo === ""){
+        return false;
+    }
+
+// -> Criar o objeto da tarefa e empurrar (push) para o array principal.
+    let novaTarefa = {
+        id: Date.now(),
+        texto: textoLimpo,
+        concluida: false
+    }
+    listaDetarefasArray.push(novaTarefa);
+    return true;
+}
+
+export const alternarStatusTarefa = (id)  => {
+    const tarefa = listaDetarefasArray.find((t) => t.id === id);
+    if((tarefa)){
+        tarefa.concluida = !tarefa.concluida;
+        return;
+    }
+}
+
+export const removerTarefa = (id) => {
+    listaDetarefasArray = listaDetarefasArray.filter((tarefa) => tarefa.id !== id);
+    return;
+}
+
 btnAdicionarTarefas.addEventListener("click", (e) =>{
     e.preventDefault();
-// -> Validar se o campo não está vazio (remover espaços com .trim()).
-    let tarefas = inputTarefa.value.trim();
-    if(tarefas === ""){
+    const adiciona = adicionarTarefa(inputTarefa.value)
+    if(adiciona){
+        renderizarTarefas();
+        inputTarefa.value = ""
+    }else{
         inputTarefa.classList.remove("input-erro");
         inputTarefa.offsetWidth;
         inputTarefa.placeholder = "Ei! Escreva uma tarefa real!";
@@ -13,18 +47,14 @@ btnAdicionarTarefas.addEventListener("click", (e) =>{
         inputTarefa.focus()
         return;
     }
-// -> Criar o objeto da tarefa e empurrar (push) para o array principal.
-    let novaTarefa = {
-        id: Date.now(),
-        texto: tarefas,
-        concluida: false
-    }
-    listaDetarefasArray.push(novaTarefa);
-    // Chama a função de Renderizar e limpar 
+    adicionarTarefa();
+     // Chama a função de Renderizar e limpar 
     renderizarTarefas();
     // -> Limpar o campo de texto após a criação.
     inputTarefa.value = "";
+
 })
+
 inputTarefa.addEventListener("input", () =>{
     inputTarefa.classList.remove("input-erro");
     inputTarefa.placeholder = "Digite uma nova tarefa..."
@@ -49,8 +79,7 @@ export const renderizarTarefas = () => {
     buttonDelete.textContent = "X";
     // Evento de delete com filter
     buttonDelete.addEventListener("click", () =>{
-        let idCapturado = novoItem.dataset.id;
-        listaDetarefasArray = listaDetarefasArray.filter(t => Number(idCapturado) !== t.id);
+        removerTarefa(tarefa.id);
         // Chama a função de Renderizar as Tarefas
         renderizarTarefas();
     });
