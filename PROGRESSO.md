@@ -1,11 +1,11 @@
-# 🚀 StudyFlow — Progresso Técnico & Roadmap de Modularização (v0.2)
+# 🚀 StudyFlow — Progresso Técnico & Roadmap de Modularização (v0.2 ➔ v0.3)
 
 > **Escopo da v0.2:** Estabilização e Modularização de Pomodoro e Tasks.  
 > **Meta Metodológica:** Servir de base limpa e desacoplada para o fluxo de trabalho profissional com Git (Branches atômicas e Pull Requests bem delimitados).
 
 ---
 
-## 📍 Estado Atual da Modularização (v0.2)
+## 📍 Estado da Modularização (v0.2 Concluída)
 
 ### ✅ Concluído: Modularização e Desacoplamento do Pomodoro (18/11/2026)
 - **Regras de Negócio e Estado (`src/modules/pomodoro/pomodoro.js`):**
@@ -24,50 +24,55 @@
 
 ---
 
-### 🔄 Em Andamento: Modularização das Tarefas (Todo) — Branch `refactor/modularize-task`
-- **Avanços Realizados:**
-  - **Criação de `src/modules/todo/DOM.js` (23/11/2026):** Isolamento das capturas de nós do DOM (`inputTarefa`, `btnAdicionarTarefas`, `listaTarefas`, `listaConcluidas`).
-  - **Migração para ES Modules (23/11/2026):** Início da conversão de `src/modules/todo/todo.js` com importação dos seletores do `DOM.js`.
-  - **Extração de Funções de Estado Puro (24/11/2026):** Implementação e exportação de `getTarefas`, `adicionarTarefa`, `alternarStatusTarefa` e `removerTarefa` no `src/modules/todo/todo.js`.
-- **Pontos Restantes na Branch:**
-  - Extrair a função de apresentação `renderizarTarefas` para `src/modules/todo/render.js`.
-  - Migrar os event listeners de submissão, clique e input para `src/index.js`, centralizando a orquestração.
-  - Remover a tag `<script src="./src/modules/todo/todo.js"></script>` legada do `index.html`.
+### ✅ Concluído: Modularização e Desacoplamento das Tarefas (Todo) (25/11/2026)
+- **Mapeamento de Interface (`src/modules/todo/DOM.js` - 23/11/2026):**
+  - Centraliza todas as referências dos nós da interface de tarefas (`inputTarefa`, `btnAdicionarTarefas`, `listaTarefas`, `listaConcluidas`).
+- **Regras de Negócio e Estado Puro (`src/modules/todo/todo.js` - 24/11/2026):**
+  - Gerenciamento de estado em memória com funções puras e isoladas (`getTarefas()`, `adicionarTarefa()`, `alternarStatusTarefa()`, `removerTarefa()`).
+  - Totalmente desacoplado de manipulações e nós do DOM.
+- **Camada de Apresentação (`src/modules/todo/render.js` - 25/11/2026):**
+  - Função `renderizarTarefas()` responsável exclusivamente por montar os itens `li`, classes, botões de exclusão, checkboxes e mensagens de listas vazias.
+- **Orquestração e Event Delegation (`src/index.js` - 25/11/2026):**
+  - Event listeners de submissão e input centralizados no maestro da aplicação.
+  - Gerenciamento eficiente de cliques e toggles via Event Delegation nas listas utilizando `e.target.closest("li")`.
+- **Limpeza de HTML (`index.html` - 25/11/2026):**
+  - Remoção da tag `<script>` legada de tarefas; carregamento 100% modular via `type="module"`.
 
 ---
 
-## 🎯 Próximo Passo na Branch / PR: `refactor/modularize-task`
+## 🎯 Próximo Marco: Início da v0.3 — Fundação de Flow (Fluxo Git: main + develop)
 
-> **Regra de Ouro do Tech Lead:** *Isole a feature em camadas de responsabilidade única (DOM, Estado/Regras e Renderização), orquestrando o fluxo no ponto de entrada da aplicação.*
+> **Diretriz de Tech Lead:** *Com a estabilização e modularização de Pomodoro e Tasks concluídas na v0.2, consolidamos a base técnica para adotar o fluxo profissional de Git com branches `main` (produção/estável) e `develop` (integração de features).*
 
-- **Tipo:** Refatoração Arquitetural e Modularização ES6 (Refactor).
-- **Alvo Imediato:** Criar `src/modules/todo/render.js` e migrar os event listeners para `src/index.js`.
-- **Checklist da Branch:**
-  - [x] **Criar `src/modules/todo/DOM.js` (23/11/2026):** Exportar seletores dos inputs, botões e listas (`inputTarefa`, `btnAdicionarTarefas`, `listaTarefas`, `listaConcluidas`).
-  - [x] **Migrar `src/modules/todo/todo.js` para ES Modules (23/11/2026):** Importar elementos do `DOM.js`.
-  - [x] **Extrair funções de estado puro (24/11/2026):** Isolar em `src/modules/todo/todo.js` as funções de negócio e estado: `getTarefas()`, `adicionarTarefa()`, `alternarStatusTarefa()` e `removerTarefa()`.
-  - [ ] **Criar `src/modules/todo/render.js` (Próximo Passo):** Extrair a função `renderizarTarefas(tarefas)` responsável exclusivamente por construir os itens visuais (`li`, checkboxes, botões de exclusão e mensagens de lista vazia).
-  - [ ] **Migrar event listeners para `src/index.js` (Próximo Passo):** Conectar os event listeners de submissão, input e deleção/toggle no orquestrador raiz.
-  - [ ] **Atualizar `index.html`:** Remover a importação legada `<script src="./src/modules/todo/todo.js"></script>`.
-- **Critério de Sucesso (DoD):** Todas as operações de tarefas funcionando via ES Modules orquestradas pelo `src/index.js`, com `todo.js` totalmente livre de manipulação de DOM.
+- **Transição de Versão:** Encerramento oficial da **v0.2** (Estabilização) e abertura da **v0.3** (Fundação de Flow).
+- **Estratégia de Branches:**
+  1. **Consolidação da v0.2:** Merge e fechamento da branch `refactor/modularize-task` na branch `develop`, consolidando a versão estável em `main`.
+  2. **Adoção do Git Flow:**
+     - `main`: código estável de produção (v0.2 finalizada).
+     - `develop`: branch base para o desenvolvimento integrado das features da v0.3.
+     - `feature/*`: branches pontuais criadas a partir de `develop` (ex.: `feature/create-flow`, `feature/list-flows`).
+- **Foco Técnico da v0.3:**
+  - Criação da entidade `Flow` (espaço de acompanhamento com id, título, status e timestamps).
+  - Vínculo obrigatório: toda `Task` deve pertencer a um `Flow` (Regra de Domínio RN04).
+  - Estruturação do Dashboard para alternância e visualização de Flows ativos.
 
 ---
 
 ## ⚠️ Pontos de Trava / Regras de Domínio Pendentes
 
-### 1. Modelagem de Tarefas (Boolean vs Estados de Domínio)
-- **Situação Atual:** Tarefas estruturadas com `{ id, texto, concluida: boolean }`.
-- **Requisito do Domínio (Seção 3.3 e 9 de `docs/requisitos-studyflow.md`):** Uma `Task` no domínio StudyFlow deve ter status (`'pendente'`, `'em andamento'`, `'concluída'`) e campos de rastreamento temporal (`createdAt`, `completedAt`).
-- **Estratégia na v0.2:** Durante a extração para `todo.js`, preparar a estrutura para acomodar os estados de domínio sem quebrar a interface simples de checkbox atual.
+### 1. Modelagem de Tarefas (Migração para o Domínio da v0.3)
+- **Situação Atual:** Tarefas funcionam com `{ id, texto, concluida: boolean }`.
+- **Requisito do Domínio (Seção 3.3 e 9 de `docs/requisitos-studyflow.md`):** Uma `Task` deve possuir `flowId` obrigatório, status (`'pendente'`, `'em andamento'`, `'concluída'`), timestamps (`createdAt`, `completedAt`) e `topicId` opcional.
+- **Ação na v0.3:** Evoluir o modelo de dados de tarefas assim que a entidade `Flow` estiver instituída.
 
 ### 2. Vínculo de Pomodoro com Task e Flow (StudySession)
-- **Requisito do Domínio (RF11, RF12, RF14, RN12, RN15):** Toda sessão pertence a um `Flow` e pode referenciar uma `Task`.
-- **Diretriz de Escopo:** **Não conectar Pomodoro a Tasks agora.** Essa vinculação pertence à **v0.3 (Fundação de Flow)**. Na v0.2 mantemos as duas features independentes e estáveis.
+- **Requisito do Domínio (RF11, RF12, RF14, RN12, RN15):** Toda sessão de foco pertence a um `Flow` e pode referenciar uma `Task`.
+- **Ação na v0.3:** Integrar os ciclos concluídos do Pomodoro com o registro de `StudySession` atrelado ao Flow selecionado.
 
 ### 3. Persistência de Dados no Cliente (`localStorage`)
-- O Pomodoro já lê e grava métricas no `localStorage`.
-- O módulo de tarefas ainda opera exclusivamente em memória (perde dados ao recarregar).
-- A persistência das tarefas pode ser adicionada como refinamento pós-modularização ou na v0.3.
+- O Pomodoro possui persistência de estatísticas diárias.
+- O Todo opera atualmente em memória.
+- Na v0.3, estruturar a persistência centralizada do estado de Flows e suas respectivas Tasks e Sessões.
 
 ---
 
@@ -75,7 +80,7 @@
 
 | Data | Lacuna Identificada | Micro-Lab Criado | Status |
 | :--- | :------------------ | :--------------- | :----- |
-|      |                     |                  |        |
+| 25/11/2026 | Event Delegation e Element.closest() | Lab de delegação de eventos e captura contextual em listas dinâmicas | Mapeado |
 |      |                     |                  |        |
 |      |                     |                  |        |
 |      |                     |                  |        |
